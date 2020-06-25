@@ -1,0 +1,16 @@
+{
+    "name": "rasyidcode/Unofficial-CNN-Indonesia-API",
+    "description": "CNN Indonesia News API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "rasyidcode",
+            "email": "rasyidcode7@gmail.com"
+        }
+    ],
+    "require": {
+        "paquettg/php-html-parser": "^2.2",
+        "nesbot/carbon": "^2.35"
+    }
+}
