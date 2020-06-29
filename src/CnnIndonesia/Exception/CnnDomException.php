@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnn\Exception;
+namespace CnnIndonesia\Exception;
 
 class CnnDomException extends \Exception {
 

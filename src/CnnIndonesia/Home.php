@@ -2,7 +2,7 @@
 
 namespace CnnIndonesia;
 
-class NewsHomePart
+class Home
 {
     const HEADLINE_NEWS = 'headline_news';
     const FEATURED_NEWS = 'featured_news';

@@ -8,7 +8,7 @@ use CnnIndonesia\Model\Article;
 use CnnIndonesia\Model\ArticleDetail;
 use CnnIndonesia\Exception\CnnDomException;
 use CnnIndonesia\Endpoints;
-use CnnIndonesia\NewsHomePart;
+use CnnIndonesia\Home;
 
 class Cnn
 {
@@ -36,23 +36,40 @@ class Cnn
      */
     public function home(string $news_part)
     {
+        $this->dom->load(Endpoints::BASE_URL);
+
+        $articles_raw   = array();
+        $articles       = array();
+
         switch($news_part) {
-            case NewsHomePart::HEADLINE_NEWS:
-                return $this->headline_news();
-            case NewsHomePart::FEATURED_NEWS:
-                return $this->featured_news();
-            case NewsHomePart::BOX_NEWS:
-                return $this->box_news();
-            case NewsHomePart::LATEST_NEWS:
-                return $this->latest_news();
-            case NewsHomePart::LATEST_COVID:
-                return $this->latest_covid();
-            case NewsHomePart::VIDEO_NEWS:
-                return $this->video_news();
-            case NewsHomePart::POPULAR_NEWS:
+            case Home::HEADLINE_NEWS:
+                $articles_raw   = array();
+
+                $main_article   = $this->dom->find('article.big_hl a');
+                $list_article   = $this->dom->find('.playlist_wrap .playlist .media_rows article a');
+
+                array_push($articles_raw, $main_article);
+                foreach($list_article as $article_raw) { array_push($articles_raw, $article_raw); }
+
+                break;
+            case Home::FEATURED_NEWS:
+                $articles_raw   = $this->dom->find('#content #slide_bu article a');
+                break;
+            case Home::BOX_NEWS:
+                $articles_raw   = $this->dom->find('#content .l_content .cb_ms_large article a');
+                break;
+            case Home::LATEST_NEWS:
+                $articles_raw   = $this->dom->find('#content .berita_terbaru_lst .list article a');
+                break;
+            case Home::VIDEO_NEWS:
+                $articles_raw   = $this->find('#content .berita_terbaru_lst .list article a');
+                break;
+            case Home::POPULAR_NEWS:
                 return $this->popular_news();
-            case NewsHomePart::COLUMNIST:
+                break;
+            case Home::COLUMNIST:
                 return $this->columnist();
+                break;
             default:
                 return $this->toJson(
                     array(
@@ -61,29 +78,8 @@ class Cnn
                     )
                 );
         }
-    }
 
-    /**
-     * get headline news
-     * 
-     * @return array
-     */
-    private function headline_news()
-    {
-        $this->dom->load(Endpoints::BASE_URL);
         
-        $articles       = array();
-        $articles_raw   = array();
-
-        $main_article   = $this->dom->find('article.big_hl a');
-        $list_article   = $this->dom->find('.playlist_wrap .playlist .media_rows article a');
-
-        array_push($articles_raw, $main_article);
-
-        foreach($list_article as $article_raw) {
-            array_push($articles_raw, $article_raw);
-        }
-
         $articles = $this->generateArticles($articles_raw);
         
         return $this->toJson(
@@ -97,40 +93,6 @@ class Cnn
     }
 
     /**
-     * get featured news
-     * 
-     * @return array
-     */
-    private function featured_news()
-    {
-        $this->dom->load(Endpoints::BASE_URL);
-
-        $articles       = array();
-        $articles_raw   = $this->dom->find('#content #slide_bu article a');
-
-        $articles = $this->generateArticles($articles_raw);
-
-        return $this->toJson(
-            array(
-                'status'        => 200,
-                'type'          => 'featured_news',
-                'total_data'    => count($articles),
-                'data'          => $articles
-            )
-        );
-    }
-
-    /**
-     * get box news
-     * 
-     * @return array
-     */
-    private function box_news()
-    {
-
-    }
-
-    /**
      * get article detail
      * 
      * @example $url => https://www.cnnindonesia.com/nasional/20200628021802-20-518242/penularan-corona-di-tulungagung-makin-cepat
@@ -138,30 +100,46 @@ class Cnn
      */
     public function detail($url)
     {
-        $this->dom->load($url);
+        try {
+            $this->dom->load($url);
 
-        $news_detail_dom        = $this->dom->find('.l_content .content_detail');
-        
-        if (count($news_detail_dom) == 0) {
-            throw new \Exception('Error : Dom not found');
+            $news_detail_dom        = $this->dom->find('.l_content .content_detail');
+            
+            if (count($news_detail_dom) == 0) {
+                throw new CnnDomException('Error : Dom not found');
+            }
+
+            $article_detail                     = new ArticleDetail;
+            $article_detail->author             = explode('|', trim($news_detail_dom->find('div.date')->text))[0];
+            $article_detail->author             = trim($article_detail->author);
+            $article_detail->sub_category       = $news_detail_dom->find('a.gtm_breadcrumb_subkanal')->text;
+            $article_detail->content            = strip_tags($news_detail_dom->find('#detikdetailtext')->innerHtml, '<p>');
+            $article_detail->published_date     = explode('|', trim($news_detail_dom->find('div.date')->text))[1];
+            $article_detail->published_date     = trim($article_detail->published_date);
+            $article_detail->image_text         = $news_detail_dom->find('.media_artikel span')->text;
+
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_OK,
+                    'type'          => 'detail',
+                    'data'          => $article_detail->output()
+                )
+            );
+        } catch(CnnDomException $cde) {
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_NOT_FOUND,
+                    'message'       => $cde->getMessage()
+                )
+            );
+        } catch(Exception $e) {
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_INTERNAL_ERROR,
+                    'message'       => $e->getMessage()
+                )
+            );
         }
-
-        $article_detail                     = new ArticleDetail;
-        $article_detail->author             = explode('|', trim($news_detail_dom->find('div.date')->text))[0];
-        $article_detail->author             = trim($article_detail->author);
-        $article_detail->sub_category       = $news_detail_dom->find('a.gtm_breadcrumb_subkanal')->text;
-        $article_detail->content            = strip_tags($news_detail_dom->find('#detikdetailtext')->innerHtml, '<p>');
-        $article_detail->published_date     = explode('|', trim($news_detail_dom->find('div.date')->text))[1];
-        $article_detail->published_date     = trim($article_detail->published_date);
-        $article_detail->image_text         = $news_detail_dom->find('.media_artikel span')->text;
-
-        return $this->toJson(
-            array(
-                'status'        => static::HTTP_OK,
-                'type'          => 'detail',
-                'data'          => $article_detail->output()
-            )
-        );
     }
 
     /**
@@ -172,6 +150,17 @@ class Cnn
     public function full_detail($url)
     {
 
+    }
+
+    /**
+     * get iframe latest covid update
+     * 
+     * @return array
+     */
+    public function latest_covid($type)
+    {
+        $this->dom->load(Endpoints::BASE_URL);
+        echo $this->dom->find('iframe')[2]->outerHtml;
     }
 
     /**
