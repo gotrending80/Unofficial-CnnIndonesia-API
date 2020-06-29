@@ -1,7 +1,6 @@
 <?php
 
-require "../vendor/autoload.php";
-require "../Cnn/Cnn.php";
+require __DIR__ . '/../vendor/autoload.php';
 
-$cnn = new Cnn_Indonesia(new \PHPHtmlParser\Dom);
+$cnn = new \CnnIndonesia\Cnn();
 echo $cnn->headline();

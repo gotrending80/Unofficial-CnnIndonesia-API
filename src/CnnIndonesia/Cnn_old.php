@@ -5,16 +5,16 @@ use \Carbon\Carbon;
 
 class CNN_Indonesia
 {
-    private $dom;
+    private $_dom;
 
-    private $url;
+    private $_url;
 
     public function __construct($php_html_parser)
     {
         ini_set('display_errors', 1);
 
-        $this->dom = $php_html_parser;
-        $this->url = 'https://www.cnnindonesia.com/';
+        $this->_dom = $php_html_parser;
+        $this->_url = 'https://www.cnnindonesia.com/';
     }
 
 
@@ -25,13 +25,13 @@ class CNN_Indonesia
      */
     public function headline()
     {
-        $this->dom->load($this->url);
+        $this->_dom->load($this->url);
         
         $headlines      = array();
         $headlines_raw  = array();
 
-        $main_headline  = $this->dom->find('article.big_hl a');
-        $list_headline  = $this->dom->find('.playlist_wrap .playlist .media_rows article a');
+        $main_headline  = $this->_dom->find('article.big_hl a');
+        $list_headline  = $this->_dom->find('.playlist_wrap .playlist .media_rows article a');
 
         array_push($headlines_raw, $main_headline);
 
@@ -40,7 +40,7 @@ class CNN_Indonesia
         }
 
         foreach($headlines_raw as $headline) {
-            $item_headline                      = array();
+            $item_headline                 = array();
             $item_headline['url']          = $headline->getAttribute('href');
             $item_headline['image_url']    = $headline->find('img')->getAttribute('src');
             $item_headline['title']        = 
@@ -48,12 +48,12 @@ class CNN_Indonesia
                 $headline->find('h1.title')->text :
                 $headline->find('h2.title')->text;
             $item_headline['category']     = $headline->find('span.kanal')->text;
-            $item_headline['created_at']         = $this->handleDate($headline->find('span.date')->text);
+            $item_headline['created_at']   = $this->_handleDate($headline->find('span.date')->text);
             
             array_push($headlines, $item_headline);
         }
         
-        return $this->toJson(
+        return $this->_toJson(
             array(
                 'status'        => 200,
                 'type'          => 'headline',
@@ -64,33 +64,88 @@ class CNN_Indonesia
     }
 
     /**
-     * method to get berita_utama news
+     * method to get main_news news
      * 
      * @return array
      */
-    public function berita_utama()
+    public function main_news()
     {
+        $this->_dom->load($this->_url);
 
+        $berita_utamas  = array();
+        $articles_raw   = $this->_dom->find('#content #slide_bu article');
+
+        foreach($articles_raw as $article) {
+            $item_article               = array();
+            $item_article['url']        = $article->find('a')->getAttribute('href');
+            $item_article['image_url']  = $article->find('a img')->getAttribute('src');
+            $item_article['title']      = $article->find('h2.title')->text;
+
+            array_push($berita_utamas, $item_article);
+        }
+
+        return $this->_toJson(
+            array(
+                'status'        => 200,
+                'type'          => 'berita_utama',
+                'total_data'    => count($berita_utamas),
+                'data'          => $berita_utamas
+            )
+        );
     }
 
     /**
-     * get covid info
+     * get box news from home page
      * 
      * @return array
      */
-    public function covid()
+    public function box_news()
     {
+        $this->_dom->load($this->_url);
 
+        $box_news     = array();
+        $box_news_raw = $this->_dom->find('#content .l_content .cb_ms_large');
+
+        foreach ($box_news_raw as $box_news_item) {
+            $title_raw                  = $box_news_item->find('.show_red_line span.cb_title');
+            $articles_raw               = $box_news_item->find('.pd15 article');
+            $item_box                   = array();
+
+            foreach($articles_raw as $article_item) {
+                $item_box['headline_title'] = $title_raw->text;    
+                $item_box['url']            = $articles_raw->find('a')->getAttribute('href');
+                $item_box['image_url']      = $articles_raw->find('a img')->getAttribute('src');
+                $item_box['title']          = $articles_raw->find('h2.title')->text;
+                $item_box['category']       = $articles_raw->find('span.kanal')->text;
+
+                if (count($articles_raw->find('span.date')) > 0) {
+                    $item_box['created_at']     = $this->_handleDate($articles_raw->find('span.date')->text);
+                }
+
+                array_push($box_news, $item_box);
+            }
+        }
+
+        return $this->_toJson(
+            array(
+                'status'        => 200,
+                'type'          => 'covid_home',
+                'total_data'    => count($box_news),
+                'data'          => $box_news
+            )
+        );
     }
 
     /**
-     * get the new news
+     * get the updated news
      * 
      * @return array
      */
-    public function new_news()
+    public function updated_news()
     {
-        
+        $this->_dom->load($this->_url);
+
+        return $this->find('#content .berita_terbaru_lst .list article');
     }
 
     /**
@@ -124,6 +179,18 @@ class CNN_Indonesia
     {
 
     }
+
+    /**
+     * handle article tag on home page
+     * 
+     * @param string $dom_to_article
+     * 
+     * @return string
+     */
+    private function _handleArticleTags($dom_to_article)
+    {
+        
+    }
     
 
     /**
@@ -133,7 +200,7 @@ class CNN_Indonesia
      * 
      * @return string
      */
-    private function handleDate($time_ago)
+    private function _handleDate($time_ago)
     {
         $filter     = trim(str_replace('&bull;', '', trim($time_ago)));
         $time_en    = '';
@@ -173,7 +240,7 @@ class CNN_Indonesia
      * 
      * @return json
      */
-    private function toJson($data)
+    private function _toJson($data)
     {
         header('Content-Type: application/json');
         return json_encode($data);

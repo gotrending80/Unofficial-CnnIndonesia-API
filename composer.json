@@ -12,5 +12,10 @@
     "require": {
         "paquettg/php-html-parser": "^2.2",
         "nesbot/carbon": "^2.35"
+    },
+    "autoload": {
+        "psr-4": {
+          "CnnIndonesia\\": "src/CnnIndonesia/"
+        }
     }
 }
