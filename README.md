@@ -60,8 +60,10 @@ $mode       = isset($_GET['mode']) ? $_GET['mode'] : 'default';
 echo $cnn->detail($news_url, $mode);
 ```
 Here's the list of mode :
+```php
 * default
 * full
+```
 the default mode is **default** and it will only shows you the detail of that news, and if you choose **full** mode, you will see the detail + any property like in Home. here's the output if you choose full mode: 
 ```json
 {
