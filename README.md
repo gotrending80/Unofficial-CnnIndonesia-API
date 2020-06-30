@@ -18,11 +18,13 @@ $news_part  = 'headline_news'
 echo $cnn->home($news_part);
 ```
 Here's the list of news_part that you can use : 
-  * headline_news
-  * featured_news
-  * box_news
-  * latest_news
-  * popular_news
+```php
+// 1. headline_news
+// 2. featured_news
+// 3. box_news
+// 4. latest_news
+// 5. popular_news
+```
 
 Or you can look at ``src/CnnIndonesia/Home.php``. Below is output sample if you choose **headline_news**
 ```json
