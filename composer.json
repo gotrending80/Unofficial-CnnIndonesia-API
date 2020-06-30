@@ -10,8 +10,7 @@
         }
     ],
     "require": {
-        "paquettg/php-html-parser": "^2.2",
-        "nesbot/carbon": "^2.35"
+        "paquettg/php-html-parser": "^2.2"
     },
     "autoload": {
         "psr-4": {
