@@ -2,6 +2,7 @@
 
 namespace CnnIndonesia;
 
+use Exception;
 use PHPHtmlParser\Dom as HtmlParser;
 
 use CnnIndonesia\Model\Article;
@@ -72,6 +73,14 @@ class Cnn
                 );
         }
 
+        if (count($articles_raw) === 0) {
+            return $this->toJson(
+                array(
+                    'status'    => static::HTTP_NOT_FOUND,
+                    'message'   => 'Error: article not found'
+                )
+            );
+        }
         
         $articles = $this->generateArticles($articles_raw);
         
@@ -91,14 +100,18 @@ class Cnn
      * @example $url => https://www.cnnindonesia.com/nasional/20200628021802-20-518242/penularan-corona-di-tulungagung-makin-cepat
      * @param string $url
      */
-    public function detail($url)
+    public function detail($url, $mode = 'default')
     {
         try {
+            if ($mode != 'default' && $mode != 'full') {
+                throw new Exception('Error : mode is invalid');
+            }
+
             $this->dom->load($url);
 
             $news_detail_dom        = $this->dom->find('.l_content .content_detail');
             
-            if (count($news_detail_dom) == 0) {
+            if (count($news_detail_dom) === 0) {
                 throw new CnnDomException('Error : Dom not found');
             }
 
@@ -111,11 +124,24 @@ class Cnn
             $article_detail->published_date     = trim($article_detail->published_date);
             $article_detail->image_text         = $news_detail_dom->find('.media_artikel span')->text;
 
+            if ($mode == 'full') {
+                $exploded_url                   = $this->explodeArticleUrl($url);
+
+                $article_detail->url            = $exploded_url['url'];
+                $article_detail->category_id    = $exploded_url['category_id'];
+                $article_detail->created_at     = $exploded_url['created_at'];
+                $article_detail->image_url      = $this->handleImageUrl($news_detail_dom->find('.media_artikel img')->getAttribute('src'));
+                $article_detail->title          = trim($news_detail_dom->find('h1.title')->text);
+                $article_detail->id             = $exploded_url['id'];
+                $article_detail->category       = trim($news_detail_dom->find('a.gtm_breadcrumb_kanal')->text);
+                $article_detail->timestamp      = $exploded_url['timestamp'];
+            }
+
             return $this->toJson(
                 array(
                     'status'        => static::HTTP_OK,
-                    'type'          => 'detail',
-                    'data'          => $article_detail->output()
+                    'type'          => $mode != 'full' ? 'detail' : 'detail_full',
+                    'data'          => $mode != 'full' ? $article_detail->output() : $article_detail->output_full()
                 )
             );
         } catch(CnnDomException $cde) {
@@ -133,16 +159,6 @@ class Cnn
                 )
             );
         }
-    }
-
-    /**
-     * get full article detail
-     * 
-     * @param string $url
-     */
-    public function full_detail($url)
-    {
-
     }
 
     /**
