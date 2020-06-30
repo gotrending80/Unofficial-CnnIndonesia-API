@@ -43,8 +43,6 @@ class Cnn
 
         switch($news_part) {
             case Home::HEADLINE_NEWS:
-                $articles_raw   = array();
-
                 $main_article   = $this->dom->find('article.big_hl a');
                 $list_article   = $this->dom->find('.playlist_wrap .playlist .media_rows article a');
 
@@ -61,14 +59,9 @@ class Cnn
             case Home::LATEST_NEWS:
                 $articles_raw   = $this->dom->find('#content .berita_terbaru_lst .list article a');
                 break;
-            case Home::VIDEO_NEWS:
-                $articles_raw   = $this->find('#content .berita_terbaru_lst .list article a');
-                break;
             case Home::POPULAR_NEWS:
-                return $this->popular_news();
-                break;
-            case Home::COLUMNIST:
-                return $this->columnist();
+                $popular        = $this->dom->find('#content div.r_content .box.mb20')[0];
+                $articles_raw   = $popular->find('article a');
                 break;
             default:
                 return $this->toJson(
@@ -85,7 +78,7 @@ class Cnn
         return $this->toJson(
             array(
                 'status'        => static::HTTP_OK,
-                'type'          => 'headline_news',
+                'type'          => $news_part,
                 'total_data'    => count($articles),
                 'data'          => $articles
             )
