@@ -75,17 +75,17 @@ the default mode is **default** and it will only shows you the detail of that ne
     }
 }
 ```
-- **Search**
+#### Category List
 (coming soon)
-- **Category List**
+#### Sub Category List**
 (coming soon)
-- **Sub Category List**
+#### Search
 (coming soon)
-- **All News**
+#### All News
 (coming soon)
-- **Get News By Category ID**
+#### Get News By Category ID
 (coming soon)
-- **Get News By Sub Category ID**
+#### Get News By Sub Category ID
 (coming soon)
 ## Installation
 ### Using composer

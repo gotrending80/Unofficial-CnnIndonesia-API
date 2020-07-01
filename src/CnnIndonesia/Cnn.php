@@ -7,6 +7,8 @@ use PHPHtmlParser\Dom as HtmlParser;
 
 use CnnIndonesia\Model\Article;
 use CnnIndonesia\Model\ArticleDetail;
+use CnnIndonesia\Model\Category;
+use CnnIndonesia\Model\SubCategory;
 use CnnIndonesia\Exception\CnnDomException;
 use CnnIndonesia\Endpoints;
 use CnnIndonesia\Home;
@@ -21,8 +23,6 @@ class Cnn
 
     public function __construct()
     {
-        // ini_set('display_errors', 1);
-
         $this->dom = new HtmlParser;
     }
 
@@ -100,7 +100,7 @@ class Cnn
      * @example $url => https://www.cnnindonesia.com/nasional/20200628021802-20-518242/penularan-corona-di-tulungagung-makin-cepat
      * @param string $url
      */
-    public function detail($url, $mode = 'default')
+    public function detail($url, $mode)
     {
         try {
             if ($mode != 'default' && $mode != 'full') {
@@ -149,6 +149,70 @@ class Cnn
                 array(
                     'status'        => static::HTTP_NOT_FOUND,
                     'message'       => $cde->getMessage()
+                )
+            );
+        } catch(Exception $e) {
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_INTERNAL_ERROR,
+                    'message'       => $e->getMessage()
+                )
+            );
+        }
+    }
+
+    /**
+     * get list of category
+     * 
+     * @return array
+     */
+    public function get_categories($mode)
+    {
+        try {
+            if ($mode != 'default' && $mode != 'full') {
+                throw new Exception('Error : invalid mode');
+            }
+
+            $this->dom->load(Endpoints::BASE_URL);
+
+            $categories     = array();
+            $categories_raw = $this->dom->find('#nav_menu li');
+
+            foreach($categories_raw as $key => $nav_item) {
+                if ($key == 0) continue;
+                $category_raw           = $nav_item->find('a[class*="gtm_navbar"]');
+
+                $category               = new Category;
+                $category->url          = $category_raw->getAttribute('href');
+                $category->name         = trim($category_raw->text);
+                
+                if ($mode == 'full') {
+                    $sub_category_raw       = $nav_item->find('.col_2 a');
+                    $articles_raw           = $nav_item->find('.col_8 .gap article a');
+
+                    foreach($sub_category_raw as $sub_category) {
+                        $sub_cat       = new SubCategory(
+                            $sub_category->getAttribute('href'),
+                            $sub_category->text
+                        );
+                        array_push($category->sub_categories, $sub_cat->output());
+                    }
+    
+                    $category->highlights   = $this->generateArticles($articles_raw);
+                } else {
+                    unset($category->sub_categories);
+                    unset($category->highlights);
+                }
+                
+                array_push($categories, $category);
+            }
+
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_OK,
+                    'type'          => 'categories',
+                    'total_data'    => count($categories),
+                    'data'          => $categories
                 )
             );
         } catch(Exception $e) {
