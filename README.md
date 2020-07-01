@@ -76,9 +76,79 @@ the default mode is **default** and it will only shows you the detail of that ne
 }
 ```
 #### Category List
-(coming soon)
+```php
+<?php
+use CnnIndonesia\Cnn;
+
+$cnn        = Cnn();
+echo $cnn->get_categories('full');
+// Here's the list of mode :
+// 1. default
+// 2. full
+```
+sample output :
+```json
+{
+    "status": 200,
+    "type": "categories",
+    "total_data": 7,
+    "data": [
+        {
+            "url": "https://www.cnnindonesia.com/nasional",
+            "name": "Nasional",
+            "sub_categories": [
+                {
+                    "url": "https://www.cnnindonesia.com/nasional/politik",
+                    "name": "Politik"
+                },
+                ...
+            ],
+            "highlights": [
+                {
+                    "id": 519761,
+                    "title": "DPRD DKI Kritik PPDB Jakarta Jalur RW Tetap Pakai Usia",
+                    "url": "https://www.cnnindonesia.com/nasional/20200701195950-20-519761/dprd-dki-kritik-ppdb-jakarta-jalur-rw-tetap-pakai-usia",
+                    "image_url": "https://akcdn.detik.net.id/visual/2020/06/26/posko-ppdb-sma-negeri-70-jakarta-12_169.jpeg?q=100",
+                    "category": null,
+                    "created_at": "2020-07-01 19:59:50",
+                    "timestamp": 20200701195950,
+                    "category_id": 519
+                },
+                ...
+            ]
+        },
+        ...
+    ]
+}
+```
 #### Sub Category List**
-(coming soon)
+```php
+<?php
+
+use CnnIndonesia\Cnn;
+
+$cnn        = Cnn();
+echo $cnn->get_sub_categories();
+```
+sample output : 
+```json
+{
+    "status": 200,
+    "type": "sub_categories",
+    "total_data": 28,
+    "data": [
+        {
+            "url": "https://www.cnnindonesia.com/nasional/politik",
+            "name": "Politik"
+        },
+        {
+            "url": "https://www.cnnindonesia.com/nasional/hukum-kriminal",
+            "name": "Hukum & Kriminal"
+        },
+        ...
+    ]
+}
+```
 #### Search
 (coming soon)
 #### All News
