@@ -5,27 +5,21 @@ Currently Cnn Indonesia doesn't have any API on their site for developer like us
 - [paquettg/php-html-parser](https://github.com/paquettg/php-html-parser)
 
 ### Code Example
-- **Home (Main Page)**
+#### Home
 ```php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
+use CnnIndonesia\Cnn();
 
-$cnn        = new \CnnIndonesia\Cnn();
-//$news_part  = $_GET['news_part'];
-$news_part  = 'headline_news'
-
-echo $cnn->home($news_part);
-```
-Here's the list of news_part that you can use : 
-```php
+$cnn        = Cnn();
+echo $cnn->home('headline_news');
+// Here's the list of news_part that you can use : 
 // 1. headline_news
 // 2. featured_news
 // 3. box_news
 // 4. latest_news
 // 5. popular_news
 ```
-
 Or you can look at ``src/CnnIndonesia/Home.php``. Below is output sample if you choose **headline_news**
 ```json
 {
@@ -47,22 +41,17 @@ Or you can look at ``src/CnnIndonesia/Home.php``. Below is output sample if you 
     ]
 }
 ```
-- **Detail**
+#### Detail
 ```php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-
-$cnn        = new \CnnIndonesia\Cnn();
-$news_url   = $_GET['news_url'];
-$mode       = isset($_GET['mode']) ? $_GET['mode'] : 'default';
-
+use CnnIndonesia\Cnn();
+$news_url       = 'https://www.cnnindonesia.com/nasional/20200630203110-12-519252/tim-novel-baswedan-adukan-kadiv-hukum-polri-ke-ombudsman';
+$mode           = 'full';
 echo $cnn->detail($news_url, $mode);
-```
-Here's the list of mode :
-```php
-* default
-* full
+// Here's the list of mode :
+// 1. default
+// 2. full
 ```
 the default mode is **default** and it will only shows you the detail of that news, and if you choose **full** mode, you will see the detail + any property like in Home. here's the output if you choose full mode: 
 ```json
