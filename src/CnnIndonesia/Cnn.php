@@ -226,6 +226,45 @@ class Cnn
     }
 
     /**
+     * get list of sub-category
+     * 
+     * @return array
+     */
+    public function get_sub_categories()
+    {
+        try {
+            $this->dom->load(Endpoints::BASE_URL);
+
+            $subcats    = array();
+            $subcat_raw = $this->dom->find('#nav_menu li .col_2 a');
+            
+            foreach($subcat_raw as $subcat) {
+                $item_subcat       = new SubCategory(
+                    $subcat->getAttribute('href'),
+                    $subcat->text
+                );
+                array_push($subcats, $item_subcat->output());
+            }
+
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_OK,
+                    'type'          => 'sub_categories',
+                    'total_data'    => count($subcats),
+                    'data'          => $subcats
+                )
+            );
+        } catch (Exception $e) {
+            return $this->toJson(
+                array(
+                    'status'        => static::HTTP_INTERNAL_ERROR,
+                    'message'       => $e->getMessage()
+                )
+            );
+        }
+    }
+
+    /**
      * generate article output
      * 
      * @param mixed|Collection|null
