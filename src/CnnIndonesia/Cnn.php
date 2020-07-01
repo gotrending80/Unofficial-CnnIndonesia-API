@@ -162,17 +162,6 @@ class Cnn
     }
 
     /**
-     * get iframe latest covid update
-     * 
-     * @return array
-     */
-    public function latest_covid($type)
-    {
-        $this->dom->load(Endpoints::BASE_URL);
-        echo $this->dom->find('iframe')[2]->outerHtml;
-    }
-
-    /**
      * generate article output
      * 
      * @param mixed|Collection|null
