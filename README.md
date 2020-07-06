@@ -187,7 +187,38 @@ Search method has 4 different params that user need to define, keyword and page 
 }
 ```
 #### All News
-(coming soon)
+```php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$cnn        = new \CnnIndonesia\Cnn();
+$page       = isset($_GET['page']) ? $_GET['page'] : 1;
+$date       = isset($_GET['date']) ? $_GET['date'] : '';
+
+echo $cnn->allNews($page, $date);
+```
+output sampe:
+```json
+{
+    "status": 200,
+    "type": "all_news",
+    "current_page": 3,
+    "data": [
+        {
+            "id": 521575,
+            "title": "Lampard Takut Chelsea Ditekel MU dari Belakang",
+            "url": "https://www.cnnindonesia.com/olahraga/20200706221300-142-521575/lampard-takut-chelsea-ditekel-mu-dari-belakang",
+            "image_url": "https://akcdn.detik.net.id/visual/2020/07/05/manchester-united-vs-bournemouth-di-liga-inggris-3_169.jpeg?q=100",
+            "category": "Olahraga",
+            "created_at": "2020-07-06 22:13:00",
+            "timestamp": 20200706221300,
+            "category_id": 142
+        },
+        ...
+    ]
+}
+```
 #### Get News By Category ID
 (coming soon)
 #### Get News By Sub Category ID
