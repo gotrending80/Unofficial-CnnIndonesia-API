@@ -265,6 +265,50 @@ class Cnn
     }
 
     /**
+     * search article by keyword
+     * 
+     * @param string $keyword
+     * @param string $type (optional) foto|video|infografis|kolom
+     * 
+     * @return array
+     */
+    public function search($keyword, $category, $date, $page) {
+        $this->dom->load(Endpoints::getSearchUrlLink($keyword, $category, $date, $page));
+        
+        $total_article_raw  = $this->dom->find('#content .container');
+        $res_total          = $this->findTotalArticles(trim($total_article_raw->text));
+        $total_article      = count($res_total) > 1 ? $res_total[1] : $res_total[0];
+        $articles_raw       = $this->dom->find('#content .l_content .media_rows article a');
+
+        $articles           = $this->generateArticles($articles_raw);
+        
+
+        return $this->toJson(
+            array(
+                'status'        => static::HTTP_OK,
+                'type'          => 'search',
+                'total_data'    => intval($total_article),
+                'current_page'  => intval($page),
+                'data'          => $articles
+            )
+        );
+    }
+
+
+    /**
+     * find number inside string
+     * 
+     * @param string $text
+     * @return array
+     */
+    private function findTotalArticles($text)
+    {
+        $result = array();
+        preg_match_all('/\d+/', $text, $result);
+        return $result[0];
+    }
+
+    /**
      * generate article output
      * 
      * @param mixed|Collection|null

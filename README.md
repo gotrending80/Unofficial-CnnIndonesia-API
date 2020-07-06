@@ -121,7 +121,7 @@ sample output :
     ]
 }
 ```
-#### Sub Category List**
+#### Sub Category List
 ```php
 <?php
 
@@ -150,7 +150,42 @@ sample output :
 }
 ```
 #### Search
-(coming soon)
+```php
+<?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+$cnn            = new \CnnIndonesia\Cnn();
+
+$keyword        = $_GET['keyword'];
+$category       = isset($_GET['category']) ? $_GET['category'] : ''; // format ex: &category=Nasional
+$date           = isset($_GET['date']) ? $_GET['date'] : ''; // format ex: &date=2020/07/06
+$page           = isset($_GET['page']) ? $_GET['page'] : 1; // format ex: &page=1
+
+echo $cnn->search($keyword, $category, $date, $page);
+```
+Search method has 4 different params that user need to define, keyword and page is required and the other 2 just optional, user need to define which page they want to see by passing page params. Below is the output example :
+```json
+{
+    "status": 200,
+    "type": "search",
+    "total_data": 2635,
+    "current_page": 1,
+    "data": [
+        {
+            "id": 521450,
+            "title": "Kemendikbud: Pecah Rekor, 95 Persen Peserta SBMPTN Ikut UTBK",
+            "url": "https://www.cnnindonesia.com/nasional/20200706160712-20-521450/kemendikbud-pecah-rekor-95-persen-peserta-sbmptn-ikut-utbk",
+            "image_url": "https://akcdn.detik.net.id/visual/2020/07/05/utbk-di-unj-13_169.jpeg?q=100",
+            "category": "Nasional",
+            "created_at": "2020-07-06 16:07:12",
+            "timestamp": 20200706160712,
+            "category_id": 521
+        },
+        ...
+    ]
+}
+```
 #### All News
 (coming soon)
 #### Get News By Category ID

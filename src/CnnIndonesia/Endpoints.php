@@ -4,9 +4,9 @@ namespace CnnIndonesia;
 
 class Endpoints
 {
-    const BASE_URL      = 'https://www.cnnindonesia.com/';
-    const ARTICLE_URL   = 'https://www.cnnindonesia.com/{category}/{created_at}-{category_id}-{article_id}/{title}';
-    const COVID_URL     = 'https://datawrapper.dwcdn.net/ftkHo/279/';
+    const BASE_URL              = 'https://www.cnnindonesia.com/';
+    const ARTICLE_URL           = 'https://www.cnnindonesia.com/{category}/{created_at}-{category_id}-{article_id}/{title}';
+    const SEARCH_URL            = 'https://www.cnnindonesia.com/search?query={keyword}&kanal={category}&date={date}&p={page}&query={keyword}';
 
     public static function getArticleUrlLink($category, $createdAt, $categoryId, $articleId, $title) {
         $articleUrl     = str_replace('{category}', $category, static::ARTICLE_URL);
@@ -16,5 +16,14 @@ class Endpoints
         $articleUrl     = str_replace('{category}', $title, static::ARTICLE_URL);
         
         return $articleUrl;
+    }
+
+    public static function getSearchUrlLink($keyword, $category = '', $date = '', $page = '') {
+        $search_url     = str_replace('{keyword}',  $keyword,    static::SEARCH_URL);
+        $search_url     = str_replace('{category}', $category,  $search_url);
+        $search_url     = str_replace('{date}',     $date,      $search_url);
+        $search_url     = str_replace('{page}',     $page,      $search_url);
+
+        return $search_url;
     }
 }
