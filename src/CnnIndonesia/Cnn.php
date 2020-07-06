@@ -268,7 +268,9 @@ class Cnn
      * search article by keyword
      * 
      * @param string $keyword
-     * @param string $type (optional) foto|video|infografis|kolom
+     * @param string $category
+     * @param string $date
+     * @param string $page
      * 
      * @return array
      */
@@ -288,6 +290,31 @@ class Cnn
                 'status'        => static::HTTP_OK,
                 'type'          => 'search',
                 'total_data'    => intval($total_article),
+                'current_page'  => intval($page),
+                'data'          => $articles
+            )
+        );
+    }
+
+    /**
+     * all news indexes
+     * 
+     * @param string $page
+     * @param string $date
+     * 
+     * @return array
+     */
+    public function allNews($page, $date)
+    {
+        $this->dom->load(Endpoints::getAllNewsLink($page, $date));
+
+        $articles_raw       = $this->dom->find('#content .l_content .media_rows article a');
+        $articles           = $this->generateArticles($articles_raw);
+
+        return $this->toJson(
+            array(
+                'status'        => static::HTTP_OK,
+                'type'          => 'all_news',
                 'current_page'  => intval($page),
                 'data'          => $articles
             )
