@@ -4,23 +4,23 @@ Currently Cnn Indonesia doesn't have any API on their site for developer like us
 ## Dependencies
 - [paquettg/php-html-parser](https://github.com/paquettg/php-html-parser)
 
-### Code Example
-#### Home
+## Methods
+### Get Home Page News
+Code : 
 ```php
 <?php
 
-use CnnIndonesia\Cnn();
-
-$cnn        = Cnn();
+$cnn            = new CnnIndonesia\Cnn;
 echo $cnn->home('headline_news');
-// Here's the list of news_part that you can use : 
+// Here's the list of news options that you can use in this method: 
 // 1. headline_news
 // 2. featured_news
 // 3. box_news
 // 4. latest_news
 // 5. popular_news
 ```
-Or you can look at ``src/CnnIndonesia/Home.php``. Below is output sample if you choose **headline_news**
+
+Response : 
 ```json
 {
     "status": 200,
@@ -41,11 +41,12 @@ Or you can look at ``src/CnnIndonesia/Home.php``. Below is output sample if you 
     ]
 }
 ```
-#### Detail
+### Detail
+Code :
 ```php
 <?php
 
-use CnnIndonesia\Cnn();
+$cnn            = new CnnIndonesia\Cnn;
 $news_url       = 'https://www.cnnindonesia.com/nasional/20200630203110-12-519252/tim-novel-baswedan-adukan-kadiv-hukum-polri-ke-ombudsman';
 $mode           = 'full';
 echo $cnn->detail($news_url, $mode);
@@ -53,7 +54,8 @@ echo $cnn->detail($news_url, $mode);
 // 1. default
 // 2. full
 ```
-the default mode is **default** and it will only shows you the detail of that news, and if you choose **full** mode, you will see the detail + any property like in Home. here's the output if you choose full mode: 
+
+Response : 
 ```json
 {
     "status": 200,
@@ -75,18 +77,18 @@ the default mode is **default** and it will only shows you the detail of that ne
     }
 }
 ```
-#### Category List
+### Category List
+Code : 
 ```php
 <?php
-use CnnIndonesia\Cnn;
-
-$cnn        = Cnn();
+$cnn        = new CnnIndonesia\Cnn;
 echo $cnn->get_categories('full');
 // Here's the list of mode :
 // 1. default
 // 2. full
 ```
-sample output :
+
+Response : 
 ```json
 {
     "status": 200,
@@ -121,16 +123,15 @@ sample output :
     ]
 }
 ```
-#### Sub Category List
+### Sub Category List
+Code : 
 ```php
 <?php
 
-use CnnIndonesia\Cnn;
-
-$cnn        = Cnn();
+$cnn        = CnnIndonesia\Cnn;
 echo $cnn->get_sub_categories();
 ```
-sample output : 
+Response : 
 ```json
 {
     "status": 200,
@@ -149,13 +150,12 @@ sample output :
     ]
 }
 ```
-#### Search
+### Search
+Code :
 ```php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-
-$cnn            = new \CnnIndonesia\Cnn();
+$cnn            = new \CnnIndonesia\Cnn;
 
 $keyword        = $_GET['keyword'];
 $category       = isset($_GET['category']) ? $_GET['category'] : ''; // format ex: &category=Nasional
@@ -164,7 +164,8 @@ $page           = isset($_GET['page']) ? $_GET['page'] : 1; // format ex: &page=
 
 echo $cnn->search($keyword, $category, $date, $page);
 ```
-Search method has 4 different params that user need to define, keyword and page is required and the other 2 just optional, user need to define which page they want to see by passing page params. Below is the output example :
+
+Response : 
 ```json
 {
     "status": 200,
@@ -187,18 +188,18 @@ Search method has 4 different params that user need to define, keyword and page 
 }
 ```
 #### All News
+Code : 
 ```php
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-
-$cnn        = new \CnnIndonesia\Cnn();
+$cnn        = new \CnnIndonesia\Cnn;
 $page       = isset($_GET['page']) ? $_GET['page'] : 1;
 $date       = isset($_GET['date']) ? $_GET['date'] : '';
 
 echo $cnn->allNews($page, $date);
 ```
-output sampe:
+
+Response :
 ```json
 {
     "status": 200,
