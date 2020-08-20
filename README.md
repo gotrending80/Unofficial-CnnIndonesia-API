@@ -36,8 +36,7 @@ Response :
             "created_at": "2020-06-30 20:31:10",
             "timestamp": 20200630203110,
             "category_id": 519
-        },
-        ...
+        }
     ]
 }
 ```
@@ -115,11 +114,9 @@ Response :
                     "created_at": "2020-07-01 19:59:50",
                     "timestamp": 20200701195950,
                     "category_id": 519
-                },
-                ...
+                }
             ]
-        },
-        ...
+        }
     ]
 }
 ```
@@ -145,8 +142,7 @@ Response :
         {
             "url": "https://www.cnnindonesia.com/nasional/hukum-kriminal",
             "name": "Hukum & Kriminal"
-        },
-        ...
+        }
     ]
 }
 ```
@@ -182,8 +178,7 @@ Response :
             "created_at": "2020-07-06 16:07:12",
             "timestamp": 20200706160712,
             "category_id": 521
-        },
-        ...
+        }
     ]
 }
 ```
@@ -215,8 +210,7 @@ Response :
             "created_at": "2020-07-06 22:13:00",
             "timestamp": 20200706221300,
             "category_id": 142
-        },
-        ...
+        }
     ]
 }
 ```
