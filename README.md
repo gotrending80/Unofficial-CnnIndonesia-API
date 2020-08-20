@@ -101,8 +101,7 @@ Response :
                 {
                     "url": "https://www.cnnindonesia.com/nasional/politik",
                     "name": "Politik"
-                },
-                ...
+                }
             ],
             "highlights": [
                 {
